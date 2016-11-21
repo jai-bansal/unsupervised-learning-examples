@@ -5,6 +5,7 @@
 library(data.table)
 library(ggplot2)
 library(dplyr)
+library(fpc)
 library(mclust)
 library(kernlab)
 
@@ -44,8 +45,6 @@ library(kernlab)
     ggtitle('Data Points') + 
     xlab('x') + 
     ylab('y')
-
-# KMEANS CLUSTERING -------------------------------------------------------
   
   # Combine 'small_rectangle' and 'large_rectangle' to conduct clustering.
   all_data = rbind(small_rectangle, large_rectangle)
@@ -60,7 +59,70 @@ library(kernlab)
                        x_scaled = x_scaled.V1, 
                        y_scaled = y_scaled.V1)
   
-  # NEED TO CHECK HOW MANY CLUSTERS ARE IDEAL (3 ways?)
+
+# DETERMINE NUMBER OF CLUSTERS --------------------------------------------
+# Find optimal number of clusters according to some common metrics.
+# Results vary widely and are not always helpful.
+  
+  # Method 1: Plot 'Total Within clusters Sum of Squares' against 'Number of clusters' (SCREE plot).
+  # 'Elbow' of the following plot indicates best number of clusters.
+  # This method appears to recommend 4 clusters. Or maybe 7.
+  
+    # Choose maximum number of clusters to consider.
+    max_clusters = 20
+  
+    # Compute 'Total Within cluster Sum of Squares' (wss):
+    within_sum_squares = (nrow(scaled_data) - 1) * sum(apply(scaled_data, 
+                                                             2, 
+                                                             var))
+    for (i in 2:max_clusters) 
+      {
+      
+        # Compute within sum of squares for each number of clusters.
+        within_sum_squares[i] = sum(kmeans(scaled_data, 
+                                           centers = i)$withinss)
+        
+      }
+  
+    # Plot 'wss' against 'Number of clusters':  
+    plot(1:max_clusters, 
+         within_sum_squares, 
+         type = 'b', 
+         xlab = '# of clusters', 
+         ylab = 'Total Within clusters Sum of Squares')
+    
+  # Method 2: 'kmeansruns()' with Calinski - Harabasz Index.
+  # This method recommends 1 cluster.
+      
+    # Best number of clusters as identified by this method.
+    kmeansruns(all_data, 
+               krange = 1:max_clusters, 
+               criterion = 'ch', 
+               scaledata = T)$bestk
+  
+    # Critical values using above method:
+    kmeansruns(all_data, 
+               krange = 1:max_clusters, 
+               criterion = 'ch', 
+               scaledata = T)$crit
+
+  # Method 3: 'kmeansruns()' with Average Silhouette Width.
+  # This method recommends 1 cluster.
+
+    # Best number of clusters as identified by this method.
+    kmeansruns(all_data, 
+               krange = 1:max_clusters, 
+               criterion = 'asw',
+               scaledata = T)$bestk
+  
+    # Critical values using above method.
+    kmeansruns(all_data, 
+               krange = 1:max_clusters, 
+               criterion = 'asw', 
+               scaledata = T)$crit
+
+# KMEANS CLUSTERING -------------------------------------------------------
+# This section conducts k-means clustering with 2 clusters.
   
   # Conduct k-means clustering with 2 clusters.
   set.seed(12346)
