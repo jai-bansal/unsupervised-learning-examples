@@ -176,7 +176,45 @@ library(kernlab)
              size = 5) + 
     theme(legend.position = 'none') +
     ggtitle('Kmeans Clustering Result')
-
+  
+# HIERARCHICAL CLUSTERING -------------------------------------------------
+# This section conducts hierarchical clustering with 2 clusters.
+  
+  # Create distance matrix.
+  hier_distance = dist(scaled_data, 
+                       method = 'euclidean')
+  
+  # Perform hierarchical clustering.
+  hier_clust = hclust(hier_distance)
+  
+  # Add hierarchical clusters to 'all_data'.
+  all_data$hier_clust = cutree(hier_clust, 
+                               k = 2)
+  
+  # Execute 'hclust' clustering using 'clusterboot':
+  hier_stability = clusterboot(as.data.frame(scaled_data), 
+                               clustermethod = hclustCBI, 
+                               method = 'ward.D',
+                               k = 2,
+                               seed = 12346)
+  
+  # View stability of clusters.
+  hier_stability$bootmean
+  
+  # Plot dendogram.
+  # Note: this plot is crowded.
+  plot(hier_clust)
+  
+  # Plot hierarchical clustering results.
+  ggplot(data = all_data, 
+         aes(x = x, 
+             y = y, 
+             color = as.character(hier_clust))) + 
+    geom_point() + 
+    theme(legend.position = 'none') +
+    ggtitle('Hierarchical Clustering Result')
+  
+  
 # EXPECTATION MAXIMIZATION (EM) CLUSTERING -------------------------------------
   ??????????????
   # Conduct EM clustering.
