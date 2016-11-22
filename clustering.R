@@ -63,6 +63,7 @@ library(kernlab)
 # DETERMINE NUMBER OF CLUSTERS --------------------------------------------
 # Find optimal number of clusters according to some common metrics.
 # Results vary widely and are not always helpful.
+# For the clustering algorithms below, I will use 2 clusters when possible.
   
   # Method 1: Plot 'Total Within clusters Sum of Squares' against 'Number of clusters' (SCREE plot).
   # 'Elbow' of the following plot indicates best number of clusters.
@@ -76,6 +77,7 @@ library(kernlab)
                                                              2, 
                                                              var))
     for (i in 2:max_clusters) 
+      
       {
       
         # Compute within sum of squares for each number of clusters.
@@ -120,6 +122,9 @@ library(kernlab)
                krange = 1:max_clusters, 
                criterion = 'asw', 
                scaledata = T)$crit
+    
+  # For the clustering algorithms below, I will use 2 clusters when possible.
+  clusters = 2
 
 # KMEANS CLUSTERING -------------------------------------------------------
 # This section conducts k-means clustering with 2 clusters.
@@ -127,7 +132,10 @@ library(kernlab)
   # Conduct k-means clustering with 2 clusters.
   set.seed(12346)
   kmeans = kmeans(scaled_data, 
-                  centers = 2)
+                  centers = clusters)
+  
+  # View cluster sizes.
+  kmeans$size
   
   # Convert cluster centers back into unscaled values and view cluster centers.
   kmeans_centers = data.table(kmeans$centers)
@@ -142,7 +150,13 @@ library(kernlab)
   # Add kmeans clusters to 'all_data'.
   all_data$kmeans_clusters = kmeans$cluster
   
-  # BOOTSTRAPPING FOR STABILITY CHECK????
+  # Check stability of 'k-means' clusters.
+  # Neither cluster is very stable.
+  kmeans_stability = clusterboot(as.data.frame(scaled_data), 
+                                 clustermethod = kmeansCBI, 
+                                 krange = clusters,
+                                 seed = 12346)
+  kmeans_stability$bootmean
   
   # Plot kmeans clustering results and cluster centers (black Cs).
   ggplot(data = all_data, 
