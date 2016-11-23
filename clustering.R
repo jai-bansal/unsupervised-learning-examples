@@ -191,7 +191,10 @@ library(kernlab)
   all_data$hier_clust = cutree(hier_clust, 
                                k = 2)
   
-  # Execute 'hclust' clustering using 'clusterboot':
+  # View hierarchical cluster sizes.
+  table(all_data$hier_clust)
+  
+  # Check hierarchical cluster stability.
   hier_stability = clusterboot(as.data.frame(scaled_data), 
                                clustermethod = hclustCBI, 
                                method = 'ward.D',
@@ -199,6 +202,7 @@ library(kernlab)
                                seed = 12346)
   
   # View stability of clusters.
+  # One cluster is relatively stable and the other is moderately stable.
   hier_stability$bootmean
   
   # Plot dendogram.
@@ -206,6 +210,7 @@ library(kernlab)
   plot(hier_clust)
   
   # Plot hierarchical clustering results.
+  # I don't include cluster centers as I don't think they are important for hierarchical clustering.
   ggplot(data = all_data, 
          aes(x = x, 
              y = y, 
@@ -213,9 +218,10 @@ library(kernlab)
     geom_point() + 
     theme(legend.position = 'none') +
     ggtitle('Hierarchical Clustering Result')
-  
+
   
 # EXPECTATION MAXIMIZATION (EM) CLUSTERING -------------------------------------
+# This section conducts EM clustering (with 2 clusters?).
   ??????????????
   # Conduct EM clustering.
   set.seed(134)
@@ -238,43 +244,53 @@ library(kernlab)
   plot(em, 
        what = 'classification')
 
+  
+  
+
 # SPECTRAL CLUSTERING -----------------------------------------------------
+# This section conducts spectral clustering with 2 clusters.
 
   # Conduct spectral clustering with 2 clusters.
   spec_clust = specc(as.matrix(scaled_data), 
                      centers = 2)
   
-  # View cluster centers and sizes.
-  centers(spec_clust)     # cluster centers
-  size(spec_clust)        # cluster sizes
+  # View cluster sizes.
+  size(spec_clust)
   
-  # Save spectral clustering cluster centers for plot.
-  # I'm not sure what cluster centers mean in the context of spectral clustering.
-  spectral_centers = data.table(centers(spec_clust))
+  # View cluster centers.
+  
+    # Save 'scaled_data' cluster centers in 'spec_clust_centers'.
+    spec_clust_centers = data.table(centers(spec_clust))
+    spec_clust_centers = rename(spec_clust_centers, 
+                                x_scaled = V1, 
+                                y_scaled = V2)
+    
+    # Unscale the data in 'spec_clust_centers'.
+    spec_clust_centers$x_scaled = (spec_clust_centers$x_scaled * attr(x_scaled, 
+                                                                      'scaled:scale')) + attr(x_scaled, 
+                                                                                              'scaled:center')
+    spec_clust_centers$y_scaled = (spec_clust_centers$y_scaled * attr(y_scaled, 
+                                                                      'scaled:scale')) + attr(y_scaled, 
+                                                                                              'scaled:center')
+    
+    # View cluster centers.
+    spec_clust_centers
+    
+  # Check spectral cluster stability.
+  # Warning: this takes a while.
+  # Both clusters are perfectly stable (both have scores of 1).
+  spectral_stability = clusterboot(as.data.frame(scaled_data), 
+                               clustermethod = speccCBI, 
+                               k = 2,
+                               seed = 12346)
+  spectral_stability$bootmean
   
   # Plot spectral clustering results.
+  # I exclude cluster centers from the plot as I don't think they are important for spectral clustering.
   ggplot(data = all_data, 
          aes(x = x, 
              y = y, 
              color = as.character(spec_clust))) + 
     geom_point() + 
-    annotate('text', 
-             x = spectral_centers$V1[1], 
-             y = spectral_centers$V2[1], 
-             label = 'C', 
-             size = 5) +
-    annotate('text', 
-             x = spectral_centers$V1[2], 
-             y = spectral_centers$V2[2], 
-             label = 'C', 
-             size = 5) +
     theme(legend.position = 'none') +
     ggtitle('Spectral Clustering Result')
-  
-  
-  
-   annotate('text', 
-             x = kmeans_centers$x_scaled[1], 
-             y = kmeans_centers$y_scaled[1], 
-             label = 'C1', 
-             size = 5)
