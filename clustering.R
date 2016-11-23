@@ -145,6 +145,9 @@ library(kernlab)
   kmeans_centers$y_scaled = (kmeans_centers$y_scaled * attr(y_scaled, 
                                                             'scaled:scale')) + attr(y_scaled, 
                                                                                     'scaled:center')
+  kmeans_centers = rename(kmeans_centers, 
+                          x = x_scaled, 
+                          y = y_scaled)
   print(kmeans_centers)
   
   # Add kmeans clusters to 'all_data'.
@@ -165,18 +168,19 @@ library(kernlab)
              color = as.character(kmeans_clusters))) + 
     geom_point() + 
     annotate('text', 
-             x = kmeans_centers$x_scaled[1], 
-             y = kmeans_centers$y_scaled[1], 
+             x = kmeans_centers$x[1], 
+             y = kmeans_centers$y[1], 
              label = 'C1', 
              size = 5) + 
     annotate('text', 
-             x = kmeans_centers$x_scaled[2], 
-             y = kmeans_centers$y_scaled[2], 
+             x = kmeans_centers$x[2], 
+             y = kmeans_centers$y[2], 
              label = 'C2', 
              size = 5) + 
     theme(legend.position = 'none') +
     ggtitle('Kmeans Clustering Result')
-  
+ 
+
 # HIERARCHICAL CLUSTERING -------------------------------------------------
 # This section conducts hierarchical clustering with 2 clusters.
   
@@ -219,33 +223,65 @@ library(kernlab)
     theme(legend.position = 'none') +
     ggtitle('Hierarchical Clustering Result')
 
-  
 # EXPECTATION MAXIMIZATION (EM) CLUSTERING -------------------------------------
-# This section conducts EM clustering (with 2 clusters?).
-  ??????????????
-  # Conduct EM clustering.
-  set.seed(134)
+# This section conducts EM clustering with 2 clusters.
+# I couldn't find a cluster stability method for EM.
+
+  # Conduct EM clustering with 2 clusters.
+  set.seed(12346)
   em = Mclust(scaled_data, 
               G = 2)
   
-  # Add EM clustering assignments to all data.
+  # Add EM clustering assignments to 'all_data'.
   all_data$em_clusters = em$classification
   
-  # Plot EM clustering results 1.
+  # View cluster sizes.
+  table(all_data$em_clusters)
+  
+  # View cluster centers.
+  
+    # Save 'scaled_data' cluster centers in 'em_clust_centers'.
+    em_clust_centers = data.table(em$parameters$mean)
+    
+    # Unscale the data in 'em_clust_centers'.
+    em_clust_centers$V1 = (em_clust_centers$V1 * attr(x_scaled, 
+                                                      'scaled:scale')) + attr(x_scaled, 
+                                                                              'scaled:center')
+    em_clust_centers$V2 = (em_clust_centers$V1 * attr(y_scaled, 
+                                                      'scaled:scale')) + attr(y_scaled, 
+                                                                              'scaled:center')
+    
+    # Rename columns of 'em_clust_centers'.
+    em_clust_centers = rename(em_clust_centers, 
+                              x = V1, 
+                              y = V2)
+    
+    # View cluster centers.
+    em_clust_centers
+  
+  # Plot EM clustering results 1 with cluster centers.
   ggplot(data = all_data, 
          aes(x = x, 
              y = y, 
              color = as.character(em_clusters))) + 
     geom_point() + 
+    annotate('text', 
+             x = em_clust_centers$x[1], 
+             y = em_clust_centers$y[1], 
+             label = 'C1', 
+             size = 5) + 
+    annotate('text', 
+             x = em_clust_centers$x[2], 
+             y = em_clust_centers$y[2], 
+             label = 'C2', 
+             size = 5) + 
     theme(legend.position = 'none') +
     ggtitle('Expectation Maximization Clustering Result')
   
-  # Plot EM clustering results 2 (for scaled data).
+  # Plot EM clustering results 2 with cluster centers (for scaled data).
   plot(em, 
        what = 'classification')
 
-  
-  
 
 # SPECTRAL CLUSTERING -----------------------------------------------------
 # This section conducts spectral clustering with 2 clusters.
@@ -261,17 +297,17 @@ library(kernlab)
   
     # Save 'scaled_data' cluster centers in 'spec_clust_centers'.
     spec_clust_centers = data.table(centers(spec_clust))
-    spec_clust_centers = rename(spec_clust_centers, 
-                                x_scaled = V1, 
-                                y_scaled = V2)
-    
+
     # Unscale the data in 'spec_clust_centers'.
-    spec_clust_centers$x_scaled = (spec_clust_centers$x_scaled * attr(x_scaled, 
-                                                                      'scaled:scale')) + attr(x_scaled, 
-                                                                                              'scaled:center')
-    spec_clust_centers$y_scaled = (spec_clust_centers$y_scaled * attr(y_scaled, 
-                                                                      'scaled:scale')) + attr(y_scaled, 
-                                                                                              'scaled:center')
+    spec_clust_centers$V1 = (spec_clust_centers$V1 * attr(x_scaled, 
+                                                          'scaled:scale')) + attr(x_scaled, 
+                                                                                  'scaled:center')
+    spec_clust_centers$V2 = (spec_clust_centers$V2 * attr(y_scaled, 
+                                                          'scaled:scale')) + attr(y_scaled, 
+                                                                                  'scaled:center')
+    spec_clust_centers = rename(spec_clust_centers, 
+                                x = V1, 
+                                y = V2)
     
     # View cluster centers.
     spec_clust_centers
@@ -280,9 +316,9 @@ library(kernlab)
   # Warning: this takes a while.
   # Both clusters are perfectly stable (both have scores of 1).
   spectral_stability = clusterboot(as.data.frame(scaled_data), 
-                               clustermethod = speccCBI, 
-                               k = 2,
-                               seed = 12346)
+                                   clustermethod = speccCBI, 
+                                   k = 2, 
+                                   seed = 12346)
   spectral_stability$bootmean
   
   # Plot spectral clustering results.
