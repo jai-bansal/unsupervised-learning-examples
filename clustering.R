@@ -183,6 +183,7 @@ library(kernlab)
 
 # HIERARCHICAL CLUSTERING -------------------------------------------------
 # This section conducts hierarchical clustering with 2 clusters.
+# I could not find an easy way to view cluster centers.
   
   # Create distance matrix.
   hier_distance = dist(scaled_data, 
@@ -214,7 +215,7 @@ library(kernlab)
   plot(hier_clust)
   
   # Plot hierarchical clustering results.
-  # I don't include cluster centers as I don't think they are important for hierarchical clustering.
+  # I could not find an easy way to include hierachical cluster centers.
   ggplot(data = all_data, 
          aes(x = x, 
              y = y, 
@@ -281,7 +282,6 @@ library(kernlab)
   # Plot EM clustering results 2 with cluster centers (for scaled data).
   plot(em, 
        what = 'classification')
-
 
 # SPECTRAL CLUSTERING -----------------------------------------------------
 # This section conducts spectral clustering with 2 clusters.
