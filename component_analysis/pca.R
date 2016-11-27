@@ -1,5 +1,5 @@
-# This scripts conducts principal component analysis (PCA) on generated data.
-# It then applies the analyses above to new (also generated) data.
+# This script conducts principal component analysis (PCA) on generated data.
+# It then projects new (also generated) data onto the components yielded from PCA.
 
 # LOAD LIBRARIES --------------------------------------------------------------------
 # This section loads necessary libraries for this script.
