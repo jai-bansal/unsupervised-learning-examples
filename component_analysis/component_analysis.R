@@ -1,4 +1,4 @@
-# This scripts conducts principal, independent, and random component analysis on generated data.
+# This scripts conducts principal and independent component analysis on generated data.
 # It then applies the analyses above to new (also generated) data.
 
 # LOAD LIBRARIES --------------------------------------------------------------------
@@ -6,9 +6,10 @@
 library(data.table)
 library(ggplot2)
 library(dplyr)
+library(fastICA)
 
 # GENERATE DATA -----------------------------------------------------------
-# This section generates the data that will be used for principal, independent, and random component analysis.
+# This section generates the data that will be used for principal and independent component analysis.
 # It also generates 'new' data that the component analyses will be applied to.
 
   # Set seed for reproducible analysis.
@@ -40,15 +41,13 @@ library(dplyr)
   ylab('y')
 
   # Create an empty table called 'first_components'.
-  # This will be filled with the first components of principal, independent, and random component analysis below.
+  # This will be filled with the first components of principal and independent component analysis below.
   # Specifically, it will be filled with the first component from the original data and the projection of 'new_data' onto
-  # the results of the 3 component analyses.
+  # the results of the component analyses.
   first_components = data.table(pca_first_orig = rep(NA, nrow(data)), 
                                 pca_first_pred = rep(NA, nrow(data)),
                                 ica_first_orig = rep(NA, nrow(data)), 
-                                ica_first_pred = rep(NA, nrow(data)),
-                                rca_first_orig = rep(NA, nrow(data)), 
-                                rca_first_pred = rep(NA, nrow(data)))
+                                ica_first_pred = rep(NA, nrow(data)))
 
 # PRINCIPAL COMPONENT ANALYSIS --------------------------------------------
 # This section conducts principal component analysis.
@@ -78,6 +77,11 @@ library(dplyr)
 
 # INDEPENDENT COMPONENT ANALYSIS --------------------------------------------
 # This section conducts independent component analysis.
+# Obviously, the input data is not mixed signals.
 
-# RANDOM COMPONENT ANALYSIS --------------------------------------------
-# This section conducts random component analysis.
+  ica = fastICA(data, 
+                n.comp = 2)
+  i = icafast(data, 
+              nc = 2)
+
+packages: fastICA, ica, e1071
