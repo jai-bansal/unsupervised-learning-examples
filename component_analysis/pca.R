@@ -1,4 +1,4 @@
-# This scripts conducts principal and independent component analysis on generated data.
+# This scripts conducts principal component analysis (PCA) on generated data.
 # It then applies the analyses above to new (also generated) data.
 
 # LOAD LIBRARIES --------------------------------------------------------------------
@@ -6,11 +6,10 @@
 library(data.table)
 library(ggplot2)
 library(dplyr)
-library(fastICA)
 
 # GENERATE DATA -----------------------------------------------------------
-# This section generates the data that will be used for principal and independent component analysis.
-# It also generates 'new' data that the component analyses will be applied to.
+# This section generates the data that will be used for PCA.
+# It also generates 'new' data that the PCA will be applied to.
 
   # Set seed for reproducible analysis.
   set.seed(8583)
@@ -41,13 +40,11 @@ library(fastICA)
   ylab('y')
 
   # Create an empty table called 'first_components'.
-  # This will be filled with the first components of principal and independent component analysis below.
-  # Specifically, it will be filled with the first component from the original data and the projection of 'new_data' onto
-  # the results of the component analyses.
+  # This will be filled with the first components of PCA below.
+  # Specifically, it will be filled with the first principal component from the original data and the projection of 'new_data' onto
+  # the results of PCA.
   first_components = data.table(pca_first_orig = rep(NA, nrow(data)), 
-                                pca_first_pred = rep(NA, nrow(data)),
-                                ica_first_orig = rep(NA, nrow(data)), 
-                                ica_first_pred = rep(NA, nrow(data)))
+                                pca_first_pred = rep(NA, nrow(data)))
 
 # PRINCIPAL COMPONENT ANALYSIS --------------------------------------------
 # This section conducts principal component analysis.
@@ -74,14 +71,3 @@ library(fastICA)
   # Project 'new_data' onto 'pca' and add to 'first_components'.
   first_components$pca_first_pred = data.table(predict(pca, 
                                                        newdata = new_data))[, .(PC1)]
-
-# INDEPENDENT COMPONENT ANALYSIS --------------------------------------------
-# This section conducts independent component analysis.
-# Obviously, the input data is not mixed signals.
-
-  ica = fastICA(data, 
-                n.comp = 2)
-  i = icafast(data, 
-              nc = 2)
-
-packages: fastICA, ica, e1071
