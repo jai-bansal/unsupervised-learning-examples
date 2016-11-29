@@ -5,6 +5,8 @@
 ################
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib import style
 
 ###############
 # GENERATE DATA
@@ -36,4 +38,22 @@ large_rectangle = large_rectangle[(large_rectangle.x.abs() > 4) | (large_rectang
 # Combine data and reset index.
 all_data = pd.concat([small_rectangle, large_rectangle])
 
-# Plot initial data.
+# Set style for plots.
+style.use('ggplot')
+
+# Create figure and subplot.
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 1, 1)
+
+# Add scatter plot data.
+plt.scatter(all_data.x,
+            all_data.y,
+            color = 'black')
+
+# Set plot and axes titles.
+plt.title('Data Points')
+plt.xlabel('x')
+plt.ylabel('y')
+
+# Show plot.
+plt.show()
