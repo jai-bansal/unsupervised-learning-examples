@@ -4,7 +4,7 @@
 ##############
 # LOAD MODULES
 ##############
-# This section loads necessary modules for this script.
+# This section loads necessary modules.
 import pandas as pd
 import random
 import numpy as np
@@ -74,7 +74,7 @@ new_data = new_data[['x', 'y']]
 # PRINCIPAL COMPONENT ANALYSIS
 ##############################
 # This section conducts principal component analysis.
-# I couldn't find a simple way to generate a biplot :(
+# I couldn't find a simple way to generate a biplot, so there's no graphical output :(
 
 # Scale data.
 scaled_data = pd.DataFrame(scale(data))
