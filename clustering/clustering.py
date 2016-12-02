@@ -78,7 +78,7 @@ all_data_scaled = scale(all_data)
 # This section conducts k-means clustering with 2 clusters.
 # I couldn't find a way to check cluster stability, but...
 # This implementation is slightly different from the kmeans I run in the R branch.
-# It runs kmeans 10 (can be changed with 'n_init' parameter) times and uses the best result
+# It runs 10 (can be changed with 'n_init' parameter) times and uses the best result
 # according to some metric.
 # In my view, this somewhat removes the need for checking cluster stability,
 # since I'm using the best clustering result found in 'n_init' runs.
@@ -146,13 +146,45 @@ plt.show()
 # SPECTRAL CLUSTERING
 #####################
 # This section conducts spectral clustering with 2 clusters.
+# I could not find a way to show cluster centers, but I think this is not very important
+# for spectral clustering.
+# I couldn't find a way to check cluster stability, but...
+# This implementation is slightly different from the spectral clustering I run in the R branch.
+# It runs 10 (can be changed with 'n_init' parameter) times and uses the best result
+# according to some metric.
+# In my view, this somewhat removes the need for checking cluster stability,
+# since I'm using the best clustering result found in 'n_init' runs.
 
 # Conduct spectral clustering with 2 clusters.
 spectral = SpectralClustering(n_clusters = 2,
-                              random_state = 12346).fit(all_data_scaled)
+                              affinity = 'nearest_neighbors',
+                              random_state = 12346,).fit(all_data_scaled)
 
 # View the affinity matrix.
 spectral.affinity_matrix_
 
 # Add spectral clustering labels to 'all_data'.
 all_data['spectral_clusters'] = spectral.labels_
+
+# View cluster sizes.
+all_data.spectral_clusters.value_counts()
+
+# Create figure and subplot.
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 1, 1)
+
+# Add scatter plot data, 1 cluster at a time.
+plt.scatter(all_data[all_data.spectral_clusters == 0].x,
+            all_data[all_data.spectral_clusters == 0].y,
+            color = 'red')
+plt.scatter(all_data[all_data.spectral_clusters == 1].x,
+            all_data[all_data.spectral_clusters == 1].y,
+            color = 'blue')
+
+# Set plot and axes titles.
+plt.title('Spectral Clustering Result')
+plt.xlabel('x')
+plt.ylabel('y')
+
+# Show plot.
+plt.show()
