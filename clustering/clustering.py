@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
 from sklearn.preprocessing import scale
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering
 
 ###############
 # GENERATE DATA
@@ -146,3 +146,13 @@ plt.show()
 # SPECTRAL CLUSTERING
 #####################
 # This section conducts spectral clustering with 2 clusters.
+
+# Conduct spectral clustering with 2 clusters.
+spectral = SpectralClustering(n_clusters = 2,
+                              random_state = 12346).fit(all_data_scaled)
+
+# View the affinity matrix.
+spectral.affinity_matrix_
+
+# Add spectral clustering labels to 'all_data'.
+all_data['spectral_clusters'] = spectral.labels_
