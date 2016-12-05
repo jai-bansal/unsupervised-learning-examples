@@ -8,7 +8,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
 from sklearn.preprocessing import scale
-from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
+from sklearn.cluster import KMeans, SpectralClustering
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 
 ###############
 # GENERATE DATA
@@ -135,32 +136,52 @@ plt.show()
 #########################
 # HIERARCHICAL CLUSTERING
 #########################
-# This section conducts hierarchical (specifically agglomerative) clustering with 2 clusters.
-# I could not find a way to show cluster centers.
+# This section conducts hierarchical clustering with 2 clusters.
+# I use 'scipy' instead of 'sklearn' to access an easy way of doing dendrograms.
+# I could not find a way to show cluster centers or check cluster stability.
 
-# Conduct hierarchical clustering with 2 clusters.
-hier = AgglomerativeClustering(n_clusters = 2).fit(all_data_scaled)
+# Create distance matrix and conduct hierarchical clustering.
+linkage_matrix = linkage(all_data_scaled)
 
-# Add hierarchical clustering labels to 'all_data'.
-all_data['hier_clusters'] = hier.labels_
+# Add cluster assignments to 'all_data'.
+all_data['hier_clusters'] = fcluster(linkage_matrix,
+                                     t = 2,
+                                     criterion = 'maxclust')
 
 # View cluster sizes.
 all_data.hier_clusters.value_counts()
 
-# Create figure and subplot.
+# Create figure and subplot for truncated dendrogram.
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 1, 1)
+
+# Specify dendrogram.
+dendrogram(linkage_matrix,
+           truncate_mode = 'lastp',
+           p = 30)
+
+# Specify dendrogram title, x-axis label, and y-axis label.
+plt.title('Hierarchical Clustering Dendrogram')
+plt.ylabel('Distance')
+plt.xlabel('Sample Index')
+
+# Show truncated dendrogram.
+plt.show()
+
+# Create figure and subplot for scatter plot.
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1)
 
 # Add scatter plot data, 1 cluster at a time.
-plt.scatter(all_data[all_data.hier_clusters == 0].x,
-            all_data[all_data.hier_clusters == 0].y,
-            color = 'red')
 plt.scatter(all_data[all_data.hier_clusters == 1].x,
             all_data[all_data.hier_clusters == 1].y,
+            color = 'red')
+plt.scatter(all_data[all_data.hier_clusters == 2].x,
+            all_data[all_data.hier_clusters == 2].y,
             color = 'blue')
 
 # Set plot and axes titles.
-plt.title('Hierarchical (Agglomerative) Clustering Result')
+plt.title('Hierarchical Clustering Result')
 plt.xlabel('x')
 plt.ylabel('y')
 
