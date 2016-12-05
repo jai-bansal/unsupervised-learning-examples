@@ -210,7 +210,7 @@ library(kernlab)
   # One cluster is relatively stable and the other is moderately stable.
   hier_stability$bootmean
   
-  # Plot dendogram.
+  # Plot dendrogram.
   # Note: this plot is crowded.
   plot(hier_clust)
   
