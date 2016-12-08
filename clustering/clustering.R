@@ -90,7 +90,8 @@ library(kernlab)
     plot(1:max_clusters, 
          within_sum_squares, 
          type = 'b', 
-         xlab = '# of clusters', 
+         main = 'Elbow Plot',
+         xlab = '# of Clusters', 
          ylab = 'Total Within clusters Sum of Squares')
     
   # Method 2: 'kmeansruns()' with Calinski - Harabasz Index.
