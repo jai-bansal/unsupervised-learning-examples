@@ -117,6 +117,7 @@ plt.show()
 
 # Conduct ICA.
 ica = FastICA(n_components = 2,
+              whiten = True, 
               random_state = 8583).fit(mixed_signals)
 
 # View estimated mixing matrix.
