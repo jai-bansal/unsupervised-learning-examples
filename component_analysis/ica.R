@@ -66,6 +66,7 @@ library(ica)
 
   # Conduct ICA.
   ica = icafast(mixed_signals, 
+                center = T,
                 nc = 2)
 
   # View the estimated mixing matrix.
