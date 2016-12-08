@@ -5,6 +5,7 @@
 ################
 import numpy as np
 import pandas as pd
+from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 from matplotlib import style
 from sklearn.preprocessing import scale
@@ -67,11 +68,55 @@ all_data_scaled = scale(all_data)
 ##############################
 # DETERMINE NUMBER OF CLUSTERS
 ##############################
-# This section finds optimal number of clusters according to some common metrics.
-# Results vary widely and are not always helpful.
+# This section finds optimal number of clusters using the silhouette score.
+# I obtain the silhouette score for kmeans clustering using between 2 and 20 clusters.
+# I could also obtain silhouette scores using other clustering methods.
+# The best value is 1 and the worst is -1.
 # For the clustering algorithms below, I will use 2 clusters when possible.
 
-# TBA
+# Create empty lists for clusters and silhouette scores.
+cluster_list = []
+silhouette_scores = []
+
+# Obtain silhouette scores.
+for i in range(2, 21):
+
+    # Add the cluster 'i' to 'cluster_list'.
+    cluster_list.append(i)
+
+    # Get the silhouette score for kmeans clustering with 'i' clusters
+    score = silhouette_score(X = all_data_scaled,
+                             labels = KMeans(n_clusters = i,
+                                             random_state = 12346).fit(all_data_scaled).labels_,
+                             random_state = 12346)
+
+    # Add 'score' to 'silhouette_scores'.
+    silhouette_scores.append(score)
+
+# Print the number of clusters with the max silhouette score and that score.
+print('Optimal # of Clusters: ' + 
+      str(cluster_list[silhouette_scores.index(max(silhouette_scores))]))
+print('Best Silhouette Score: ' + 
+      str(round(max(silhouette_scores), 2)))
+
+# Plot silhouette scores.
+
+# Create figure and subplot.
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 1, 1)
+
+# Add silhouette scores.
+ax1.plot(cluster_list,
+         silhouette_scores,
+         color = 'black')
+
+# Set plot and axes titles.
+plt.title('Silhouette Scores')
+plt.xlabel('# of Clusters')
+plt.ylabel('Silhouette Scores')
+
+# Show plot.
+plt.show()
 
 ###################
 # KMEANS CLUSTERING
