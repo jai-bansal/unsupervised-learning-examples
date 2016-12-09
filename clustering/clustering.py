@@ -5,7 +5,7 @@
 ################
 import numpy as np
 import pandas as pd
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, calinski_harabaz_score
 import matplotlib.pyplot as plt
 from matplotlib import style
 from sklearn.preprocessing import scale
@@ -77,6 +77,7 @@ all_data_scaled = scale(all_data)
 # Create empty lists for clusters and silhouette scores.
 cluster_list = []
 silhouette_scores = []
+ch_index = []
 
 # Obtain silhouette scores.
 for i in range(2, 21):
@@ -85,19 +86,31 @@ for i in range(2, 21):
     cluster_list.append(i)
 
     # Get the silhouette score for kmeans clustering with 'i' clusters
-    score = silhouette_score(X = all_data_scaled,
-                             labels = KMeans(n_clusters = i,
-                                             random_state = 12346).fit(all_data_scaled).labels_,
-                             random_state = 12346)
+    sil_score = silhouette_score(X = all_data_scaled,
+                                 labels = KMeans(n_clusters = i,
+                                                 random_state = 12346).fit(all_data_scaled).labels_,
+                                 random_state = 12346)
 
-    # Add 'score' to 'silhouette_scores'.
-    silhouette_scores.append(score)
+    # Add 'sil_score' to 'silhouette_scores'.
+    silhouette_scores.append(sil_score)
 
-# Print the number of clusters with the max silhouette score and that score.
-print('Optimal # of Clusters: ' + 
+    # Get the Calinski - Harabasz score.
+    ch_score = calinski_harabaz_score(X = all_data_scaled,
+                                      labels = KMeans(n_clusters = i,
+                                                      random_state = 12346).fit(all_data_scaled).labels_)
+
+    # Add 'ch_score' to 'ch_index'.
+    ch_index.append(ch_score)
+                                      
+# Print the optimal number of clusters according to the 2 metrics above and those metric values.
+print('Optimal # of Clusters according to Silhouette Score: ' + 
       str(cluster_list[silhouette_scores.index(max(silhouette_scores))]))
 print('Best Silhouette Score: ' + 
       str(round(max(silhouette_scores), 2)))
+print('Optimal # of Clusters according to Calinski - Harabasz score: ' + 
+      str(cluster_list[ch_index.index(max(ch_index))]))
+print('Best Calinski - Harabasz Score: ' + 
+      str(round(max(ch_index), 2)))
 
 # Plot silhouette scores.
 
