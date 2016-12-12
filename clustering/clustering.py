@@ -9,6 +9,7 @@ from sklearn.metrics import silhouette_score, calinski_harabaz_score
 import matplotlib.pyplot as plt
 from matplotlib import style
 from sklearn.preprocessing import scale
+from sklearn import mixture
 from sklearn.cluster import KMeans, SpectralClustering
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 
@@ -250,6 +251,72 @@ plt.show()
 # EXPECTATION MAXIMIZATION (EM) CLUSTERING
 ##########################################
 # This section conducts EM clustering with 2 clusters.
+# I didn't find anything explicitly called 'Expectation Maximization',
+# but the 'GaussianMixture' function used below seems similar.
+# The result is unexpected and looks like 2 ellipsoid normal distributions
+# creating a sort of 'X' pattern.
+# I couldn't find a way to check cluster stability, but...
+# This implementation is slightly different from the kmeans I run in the R branch.
+# It runs 10 (can be changed with 'n_init' parameter) times and uses the best result
+# according to some metric.
+# In my view, this somewhat removes the need for checking cluster stability,
+# since I'm using the best clustering result found in 'n_init' runs.
+
+# Conduct EM clustering.
+em = mixture.GaussianMixture(n_components = 2,
+                             init_params = 'random',
+                             n_init = 25,
+                             random_state = 12346).fit(all_data_scaled)
+
+# Get scaled cluster centers.
+em_centers = pd.DataFrame(em.means_)
+em_centers.columns = ['x', 'y']
+
+# Unscale 'em_centers' and view unscaled cluster centers.
+# Note that EM cluster centers may not be that meaningful.
+# 2 clusters could have the same EM center but different variance parameters
+# on the normal distribution and so have different points associated with the cluster.
+em_centers.x = (em_centers.x * all_data.x.std(ddof = 0)) + all_data.x.mean()
+em_centers.y = (em_centers.y * all_data.y.std(ddof = 0)) + all_data.y.mean()
+em_centers
+
+# Add EM cluster assignments to 'all_data'.
+# I couldn't find a built-in way of looking at these for training data,
+# so I used 'predict' functionality'.
+all_data['em_clusters'] = em.predict(all_data_scaled)
+
+# View cluster sizes.
+all_data.em_clusters.value_counts()
+
+# Create figure and subplot for scatter plot.
+fig = plt.figure()
+ax1 = fig.add_subplot(1, 1, 1)
+
+# Add scatter plot data, 1 cluster at a time.
+plt.scatter(all_data[all_data.em_clusters == 0].x,
+            all_data[all_data.em_clusters == 0].y,
+            color = 'red')
+plt.scatter(all_data[all_data.em_clusters == 1].x,
+            all_data[all_data.em_clusters == 1].y,
+            color = 'blue')
+
+# Add cluster centers.
+plt.text(x = em_centers.x[0],
+         y = em_centers.y[0],
+         s = 'C1',
+         fontsize = 15)
+plt.text(x = em_centers.x[1],
+         y = em_centers.y[1],
+         s = 'C2',
+         fontsize = 15)
+
+# Set plot and axes titles.
+plt.title('Expectation Maximization Clustering Result')
+plt.xlabel('x')
+plt.ylabel('y')
+
+# Show plot.
+plt.show()
 
 #####################
 # SPECTRAL CLUSTERING
