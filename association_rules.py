@@ -18,16 +18,16 @@ data = [['milk', 'cheese', 'bread', 'soda'],
         ['fruit', 'tools', 'water' ,'milk'],
         ['milk', 'fruit', 'bread', 'candy']]
 
-########################################
-# SUMMARY AND ASSOCIATION RULES ANALYSIS
-########################################
-# This section conducts summary and association rule analysis.
+###########################
+# ASSOCIATION RULE ANALYSIS
+###########################
+# This section conducts association rule analysis.
 
-# Conduct analysis.
+# Conduct association rule analysis.
 results = list(apriori(data))
 
 # Check the length of 'results'.
-# 'results' is a list and each element is has item statistics or an
+# 'results' is a list and each element has item statistics or an
 # association rule.
 len(results)
 
@@ -59,7 +59,6 @@ results[0].ordered_statistics[0].lift
 
 # Find records with arbitrarily high support, confidence, and items in 'items_base'.
 # NOTE: THE FOLLOWING SEARCH IS FOR EXAMPLE PURPOSES ONLY.
-# Searching through these results seems complicated.
 # Some records contain confidence and lift measures for adding multiple items to the base item set specified.
 # This means that some records have multiple elements in the list(?) 'ordered_statistics'.
 # However, some records contain confidence and lift only for adding 1 item.
@@ -124,5 +123,8 @@ for i in range(0, len(results)):
         high_confidence.append([i, j])
     if lift_counter >= lift_cutoff:
         high_lift.append([i, j])
+
+# For an element of a list of form [i, j], the corresponding record can be viewed by using:
+# results[i].ordered_statistics[j]
 
     
