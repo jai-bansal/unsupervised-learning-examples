@@ -1,14 +1,14 @@
 #### Summary:
 This project contains reference code and visualizations for various unsupervised learning techniques in R and Python. The goal is to provide examples and reference code/visualizations for unsupervised learning techniques.
 
-The main techniques included are clustering, principal component analysis (PCA), and independent component analysis (ICA). The clustering algorithms included are kmeans, hierarchical, expectation maximization, and spectral. For clustering, best number of clusters analysis, cluster sizes, cluster centers, stability analysis, and relevant plots are provided whenever possible. For component analysis, relevant plots are provided whenever possible.
+The main techniques included are clustering, principal component analysis (PCA), independent component analysis (ICA), and association rules. The clustering algorithms included are kmeans, hierarchical, expectation maximization, and spectral. For clustering, best number of clusters analysis, cluster sizes, cluster centers, stability analysis, and relevant plots are provided whenever possible. For component analysis, relevant plots are provided whenever possible. For association rules, itemsets and rules are shown.
 
 #### Motivation:
 I created this project to learn about and document code and visualizations for unsupervised learning techniques.
 
 #### Contents:
 The R and Python analyses are located in the "R" and "Python" branches respectively.
-Both branches contain a "clustering" and "component_analysis" folder containing clustering and component analysis material, respectively.
+Both branches contain "clustering" and "component_analysis" folders containing clustering and component analysis materials, respectively. The "R" branch contains an "association_rules" folder which contains association rule analysis and a generated data file for this analysis. The "Python" branch contains the script "assocation_rules.py" that contains association rule analysis.
 
 The "R" branch "clustering" folder contains:
 - a script with all clustering and related code ("clustering.R")
@@ -27,6 +27,11 @@ The "R" branch "component_analysis" folder contains:
 - the mixed signals for ICA ("ica_mixed_signal_1.png" and "ica_mixed_signal_2.png")
 - the source signal estimates for ICA ("ica_source_signal_estimate_1.png" and "ica_source_signal_estimate_2.png")
 
+The "R" branch "association_rules" folder contains:
+- a CSV file of generated data that association rules is conducted on ("association_rules_data.csv")
+- a script containing assocation rule analysis ("assocation_rules.R")
+- Note: conducting assocation rule analysis in R is easiest when importing from CSV; thus, the CSV data file in this folder
+
 The "Python" branch "clustering" folder contains:
 - a script with all clustering and related code ("clustering.py")
 - a plot of the initial data ("initial_data.png")
@@ -42,6 +47,8 @@ The "Python" branch "component_analysis" folder contains:
 - the source signals for ICA ("ica_source_signal_1.png" and "ica_source_signal_2.png")
 - the mixed signals for ICA ("ica_mixed_signal_1.png" and "ica_mixed_signal_2.png")
 - the source signal estimates for ICA ("ica_source_signal_estimate_1.png" and "ica_source_signal_estimate_2.png")
+
+The "Python" branch has a script for association rule analysis ("association_rules.py"), not a separate folder like the "R" branch.
 
 #### Dataset Details:
 I generate all data depending on the technique being used.
